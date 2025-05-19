@@ -1,19 +1,17 @@
-package data_structs;
+package data_sturcts;
 
-import java.util.LinkedList;
-import java.util.Queue;
+import ArrivalBuffer;
 import Parcel;
 
 public class DestinationSorter {
-
     private class Node {
         String cityName;
-        Queue<Parcel> parcelList;
+        ArrivalBuffer parcelList;
         Node left, right;
 
         Node(String cityName) {
             this.cityName = cityName;
-            this.parcelList = new LinkedList<>();
+            this.parcelList = new ArrivalBuffer(Integer.MAX_VALUE); // max as def cap value::
             this.left = null;
             this.right = null;
         }
@@ -32,25 +30,25 @@ public class DestinationSorter {
 
     private Node insertParcelRecursive(Node node, Parcel parcel) {
         if (node == null) {
-            Node newNode = new Node(parcel.destinationCity);
-            newNode.parcelList.add(parcel);
+            Node newNode = new Node(parcel.getDestinationCity());
+            newNode.parcelList.enqueue(parcel);
             return newNode;
         }
 
-        int compare = parcel.destinationCity.compareToIgnoreCase(node.cityName);
+        int compare = parcel.getDestinationCity().compareToIgnoreCase(node.cityName);
         if (compare < 0) {
             node.left = insertParcelRecursive(node.left, parcel);
         } else if (compare > 0) {
             node.right = insertParcelRecursive(node.right, parcel);
         } else {
             // Aynı şehirse kuyruğa ekle
-            node.parcelList.add(parcel);
+            node.parcelList.enqueue(parcel);
         }
         return node;
     }
 
     // 🟡 Belirli bir şehir için kuyruktaki tüm kargoları al
-    public Queue<Parcel> getCityParcels(String city) {
+    public ArrivalBuffer getCityParcels(String city) {
         Node node = search(root, city);
         return (node != null) ? node.parcelList : null;
     }
@@ -67,12 +65,26 @@ public class DestinationSorter {
     public boolean removeParcel(String city, String parcelID) {
         Node node = search(root, city);
         if (node != null && !node.parcelList.isEmpty()) {
-            for (Parcel p : node.parcelList) {
-                if (p.parcelID.equals(parcelID)) {
-                    node.parcelList.remove(p);
-                    return true;
+            // Create a temporary buffer to hold parcels
+            ArrivalBuffer tempBuffer = new ArrivalBuffer(Integer.MAX_VALUE);
+            boolean found = false;
+            
+            // Move all parcels except the one to remove to temp buffer
+            while (!node.parcelList.isEmpty()) {
+                Parcel p = node.parcelList.dequeue();
+                if (!p.getParcelID().equals(parcelID)) {
+                    tempBuffer.enqueue(p);
+                } else {
+                    found = true;
                 }
             }
+            
+            // Move parcels back to original buffer
+            while (!tempBuffer.isEmpty()) {
+                node.parcelList.enqueue(tempBuffer.dequeue());
+            }
+            
+            return found;
         }
         return false;
     }
@@ -132,3 +144,4 @@ public class DestinationSorter {
         return maxCity;
     }
 }
+
