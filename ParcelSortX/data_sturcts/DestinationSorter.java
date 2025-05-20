@@ -14,7 +14,7 @@ public class DestinationSorter {
         public Node(String cityName) {
             this.cityName = cityName;
             this.parcelQueue = new LinkedList<>();
-        } 
+        }
     }
 
     private Node root;
