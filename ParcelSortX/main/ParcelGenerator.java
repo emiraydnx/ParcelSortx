@@ -20,7 +20,7 @@ public class ParcelGenerator {
 
     // Rastgele bir Parcel oluşturur
     public Parcel generateSingleParcel(int currentTick) {
-        String id = "P" + (parcelCounter++);
+        String id = "P0" + (parcelCounter++);
         String destination = cityList[random.nextInt(cityList.length)];
         String size = sizeList[random.nextInt(sizeList.length)];
         int priority = 1 + random.nextInt(3); // 1, 2 veya 3
