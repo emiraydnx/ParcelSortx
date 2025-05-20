@@ -7,7 +7,7 @@ import java.util.logging.*;
 
 public class DestinationSorter {
     private static final Logger logger = Logger.getLogger(DestinationSorter.class.getName());
-    
+
     private class Node {
         String cityName;
         ArrivalBuffer parcelList;
@@ -44,7 +44,9 @@ public class DestinationSorter {
         if (node == null) {
             Node newNode = new Node(parcel.getDestinationCity());
             newNode.parcelList.enqueue(parcel);
+
             logger.info(String.format("[New City] Created node for %s", parcel.getDestinationCity()));
+
             return newNode;
         }
 
@@ -93,6 +95,7 @@ public class DestinationSorter {
                     tempBuffer.enqueue(p);
                 } else {
                     found = true;
+
                     totalParcelsDispatched++;
                     logger.info(String.format("[Dispatch] Parcel %s dispatched from %s", 
                         parcelID, city));
