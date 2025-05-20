@@ -6,7 +6,7 @@ import java.util.Arrays;
 public class Main {
     public static void main(String[] args) {
         try {
-            ConfigManager config = new ConfigManager("config.txt");
+            ConfigManager config = new ConfigManager("ParcelSortX/config.txt");
 
             System.out.println("Loaded Config:");
             System.out.println("Max Ticks: " + config.getMaxTicks());
