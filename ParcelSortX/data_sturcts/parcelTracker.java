@@ -156,6 +156,53 @@ public class ParcelTracker {
             throw e;
         }
     }
+     public int countStatus(ParcelStatus status) {
+        int count = 0;
+        for (ParcelNode node : table) {
+            while (node != null) {
+                if (node.status == status) count++;
+                node = node.next;
+            }
+        }
+        return count;
+    }
+
+    public double getLoadFactor() {
+        return (double) size / capacity;
+    }
+
+    public String getTimingStats() {
+        int totalDelay = 0;
+        int maxDelay = 0;
+        String maxDelayParcel = "N/A";
+        int processed = 0;
+        int returnedMoreThanOnce = 0;
+
+        for (ParcelNode node : table) {
+            while (node != null) {
+                if (node.status == ParcelStatus.DISPATCHED && node.dispatchTick >= 0) {
+                    int delay = node.dispatchTick - node.arrivalTick;
+                    totalDelay += delay;
+                    processed++;
+                    if (delay > maxDelay) {
+                        maxDelay = delay;
+                        maxDelayParcel = node.parcelID;
+                    }
+                }
+                if (node.returnCount > 1) {
+                    returnedMoreThanOnce++;
+                }
+                node = node.next;
+            }
+        }
+
+        double avgDelay = (processed > 0) ? (double) totalDelay / processed : 0;
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("Average Parcel Processing Time: %.2f ticks\n", avgDelay));
+        sb.append(String.format("Parcel With Longest Delay: %s (%d ticks)\n", maxDelayParcel, maxDelay));
+        sb.append(String.format("Parcels Returned More Than Once: %d\n\n", returnedMoreThanOnce));
+        return sb.toString();
+    }
     
     public boolean exists(String parcelID) {
         return getNode(parcelID) != null;
